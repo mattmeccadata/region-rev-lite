@@ -1,9 +1,20 @@
 
 import streamlit as st
 import pandas as pd
+import importlib
 
-# Import your existing script that produces the two DataFrames
-# Make sure monday_to_df.py lives in the same folder in your repo
+
+st.set_page_config(page_title="Regional Revenue Snapshot", layout="wide")
+st.title("Regional Revenue Snapshot")
+
+# Add a Run / Refresh button
+col1, col2 = st.columns([1, 8])
+with col1:
+    if st.button("🔄 Refresh Data"):
+        st.cache_data.clear()   # clear any cached results
+        importlib.reload(__import__("monday_to_df"))
+        st.experimental_rerun()
+
 from monday_to_df import region_rev_breakdown, region_balances
 
 st.set_page_config(page_title="Regional Revenue Snapshot", layout="wide")
@@ -98,10 +109,10 @@ def build_table(region_rev_breakdown: pd.DataFrame, region_balances: pd.DataFram
 
 table_df = build_table(region_rev_breakdown, region_balances)
 
-st.caption("Values shown in USD.")
+st.caption("Copy-paste into https://docs.google.com/spreadsheets/d/1eDJm3Vcy191uTfafAcWBXNmyGNzgCsLT/edit?usp=sharing&ouid=105572649957203637297&rtpof=true&sd=true.")
 
 # Display with nice currency formatting
-col_config = {region: st.column_config.NumberColumn(format="$%,.0f") for region in table_df.columns}
+col_config = {region: st.column_config.NumberColumn(format="%,.2f") for region in table_df.columns}
 
 st.dataframe(
     table_df,
@@ -116,4 +127,3 @@ with st.expander("Debug: preview source DataFrames"):
     st.dataframe(region_balances.head(50), use_container_width=True)
 
 st.markdown("---")
-st.write("Tip: push this repo to GitHub and deploy on Streamlit Community Cloud. See README for steps.")
