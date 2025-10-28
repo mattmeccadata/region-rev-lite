@@ -13,7 +13,7 @@ with col1:
     if st.button("🔄 Refresh Data"):
         st.cache_data.clear()   # clear any cached results
         importlib.reload(__import__("monday_to_df"))
-        st.experimental_rerun()
+        st.rerun()
 
 from monday_to_df import region_rev_breakdown, region_balances
 
