@@ -7,7 +7,33 @@ import pandas as pd
 from rapidfuzz import fuzz, process
 from dateutil import tz
 
-MONDAY_API_TOKEN = os.getenv("MONDAY_API_TOKEN") or "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjE4MjM0MTAwOSwiYWFpIjoxMSwidWlkIjoyNjg1NTM4NywiaWFkIjoiMjAyMi0wOS0yMlQxMTo0OToxNy4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MzAzNTU1NSwicmduIjoidXNlMSJ9.I3wDWG-yICZO3WOmqh-0QxEwXp5hUXzwUi9g5hHREW0"
+# Optional: only import streamlit if present (so plain scripts won’t break)
+try:
+    import streamlit as st  # type: ignore
+except Exception:
+    st = None
+
+def get_monday_token() -> str:
+    # 1) Streamlit Cloud / local `.streamlit/secrets.toml`
+    if st is not None:
+        try:
+            token = st.secrets["MONDAY_API_TOKEN"]
+            if token:
+                return token
+        except Exception:
+            pass
+
+    # 2) Standard environment variable
+    token = os.getenv("MONDAY_API_TOKEN")
+    if token:
+        return token
+
+    # 3) Fail fast — do NOT default to a literal
+    raise RuntimeError(
+        "MONDAY_API_TOKEN is not set. Define it in Streamlit secrets or as an env var."
+    )
+
+MONDAY_API_TOKEN = get_monday_token()
 API_URL = "https://api.monday.com/v2"
 API_VERSION = "2025-04"  # supports items_page + typed column_values; good forward-compat
 
