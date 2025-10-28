@@ -112,7 +112,7 @@ table_df = build_table(region_rev_breakdown, region_balances)
 st.caption("Copy-paste into https://docs.google.com/spreadsheets/d/1eDJm3Vcy191uTfafAcWBXNmyGNzgCsLT/edit?usp=sharing&ouid=105572649957203637297&rtpof=true&sd=true.")
 
 # Display with nice currency formatting
-col_config = {region: st.column_config.NumberColumn(format="%,.2f") for region in table_df.columns}
+col_config = {region: st.column_config.NumberColumn(format="dollar") for region in table_df.columns}
 
 st.dataframe(
     table_df,
